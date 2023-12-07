@@ -125,12 +125,21 @@ final class PermissionManager implements PluginRegistry.ActivityResultListener, 
             return false;
         }
 
-        requestResults.put(permission, status);
-        pendingRequestCount--;
+        if (requestResults != null) {
+            requestResults.put(permission, status);
+            pendingRequestCount--;
 
-        // Post result if all requests have been handled.
-        if (pendingRequestCount == 0) {
-            this.successCallback.onSuccess(requestResults);
+            // Post result if all requests have been handled.
+            if (successCallback != null && pendingRequestCount == 0) {
+                this.successCallback.onSuccess(requestResults);
+            }
+        } else {
+            requestResults = new HashMap<>();
+            requestResults.put(permission, status);
+
+            if (successCallback != null) {
+                this.successCallback.onSuccess(requestResults);
+            }
         }
         return true;
     }
